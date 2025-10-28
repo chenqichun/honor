@@ -38,7 +38,6 @@ export class HorzScaleBehaviorTime {
     }
     setOptions(options) {
         this._options = options;
-        console.log(options)
         this.updateFormatter(options.localization);
     }
     // 把yyyy-mm-dd的时间，转成{day,month,year}

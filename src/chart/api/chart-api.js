@@ -84,10 +84,13 @@ export class ChartApi {
     _panes = new WeakMap();
     constructor(container, horzScaleBehavior, options) {
         this._dataLayer = new DataLayer(horzScaleBehavior);
+        console.log(this._dataLayer,666777)
+        window.zzv = this._dataLayer
         const internalOptions = (options === undefined) ?
             clone(chartOptionsDefaults()) :
             merge(clone(chartOptionsDefaults()), toInternalOptions(options));
         this._horzScaleBehavior = horzScaleBehavior;
+
         this._chartWidget = new ChartWidget(container, internalOptions, horzScaleBehavior);
         this._chartWidget.clicked().subscribe((paramSupplier) => {
             if (this._clickedDelegate.hasListeners()) {

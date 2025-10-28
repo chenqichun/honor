@@ -41,12 +41,12 @@ function saveOriginalTime(data) {
     }
 }
 export class DataLayer {
-    // note that _pointDataByTimePoint and _seriesRowsBySeries shares THE SAME objects in their values between each other
-    // it's just different kind of maps to make usages/perf better
+    // 以时间为key的map
     _pointDataByTimePoint = new Map();
     _seriesRowsBySeries = new Map();
+    // 以series做为key, 最后一个时间戳的值作为val
     _seriesLastTimePoint = new Map();
-    // this is kind of "dest" values (in opposite to "source" ones) - we don't need to modify it manually, the only by calling _updateTimeScalePoints or updateSeriesData methods
+    // 以时间戳把从小到大排序
     _sortedTimePoints = [];
     _horzScaleBehavior;
     constructor(horzScaleBehavior) {
@@ -59,6 +59,7 @@ export class DataLayer {
         this._sortedTimePoints = [];
     }
     setSeriesData(series, data) {
+        console.log(series,data)
         // 数据初始化的地方
         let needCleanupPoints = this._pointDataByTimePoint.size !== 0;
         let isTimeScaleAffected = false;
@@ -84,7 +85,9 @@ export class DataLayer {
         let seriesRows = [];
         if (data.length !== 0) {
             const originalTimes = data.map((d) => d.time);
+            // 返回一个方法，这个方法会把传入的时间戳返回成一个对象{}, time => {timestamp: time}
             const timeConverter = this._horzScaleBehavior.createConverterToInternalObj(data);
+            // series.seriesType()等于如Candlestick
             const createPlotRow = getSeriesPlotRowCreator(series.seriesType());
             const dataToPlotRow = series.customSeriesPlotValuesBuilder();
             const customWhitespaceChecker = series.customSeriesWhitespaceCheck();
