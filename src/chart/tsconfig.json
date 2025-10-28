@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+      // 目标 JS 版本：设置为高版本（如 ESNext），避免语法转译（如不将箭头函数转为 function）
+      "target": "ESNext",
+      // 模块系统：保持与源代码一致（如 ES 模块），避免转为 CommonJS 的 require/exports
+      "module": "ESNext",
+      // 模块解析方式：与模块系统匹配
+      "moduleResolution": "bundler",
+      // 不生成声明文件（仅需 JS 输出时）
+      "declaration": false,
+      // 保留原始代码中的注释（可选）
+      "removeComments": false,
+      // 禁用严格模式检查（如果不需要严格类型校验）
+      "strict": false,
+      // 允许未使用的变量/参数（避免因未使用变量报错，可选）
+      "noUnusedLocals": false,
+      "noUnusedParameters": false
+    },
+    // 指定需要编译的 TS 文件（或目录）
+    "include": ["./**/*"], // 例如所有 src 目录下的 TS 文件
+    "exclude": ["node_modules"]
+  }

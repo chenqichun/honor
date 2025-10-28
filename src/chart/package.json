@@ -1,0 +1,8 @@
+{
+   "scripts": {
+      "zz": "tsc index.ts"
+   },
+   "devDependencies": {
+      "typescript": "^5.9.3"
+   }
+}
