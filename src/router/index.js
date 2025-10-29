@@ -30,7 +30,10 @@ const routes = [
     path: '/realTimeLine',
     component: () => import("@/views/realTimeLine.vue")
   },
-  
+  {
+    path: '/coolChart',
+    component: () => import("@/views/coolChart.vue")
+  },
   
 ]
 const router = new Router({

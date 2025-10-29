@@ -58,8 +58,9 @@ export class DataLayer {
         this._seriesLastTimePoint.clear();
         this._sortedTimePoints = [];
     }
+    // 初始化数据，多次调用都会覆盖原来的
     setSeriesData(series, data) {
-        console.log(series,data)
+ 
         // 数据初始化的地方
         let needCleanupPoints = this._pointDataByTimePoint.size !== 0;
         let isTimeScaleAffected = false;
@@ -87,22 +88,30 @@ export class DataLayer {
             const originalTimes = data.map((d) => d.time);
             // 返回一个方法，这个方法会把传入的时间戳返回成一个对象{}, time => {timestamp: time}
             const timeConverter = this._horzScaleBehavior.createConverterToInternalObj(data);
-            // series.seriesType()等于如Candlestick
+            // series.seriesType()等于如Candlestick,创建点的方法
             const createPlotRow = getSeriesPlotRowCreator(series.seriesType());
+            // 目前打印是undefined，可能特殊场合才能触发
             const dataToPlotRow = series.customSeriesPlotValuesBuilder();
+            // 目前打印是undefined，可能特殊场合才能触发
             const customWhitespaceChecker = series.customSeriesWhitespaceCheck();
+            
             seriesRows = data.map((item, index) => {
+                // 返回{timestamp: time}
                 const time = timeConverter(item.time);
+                // 返回{timestamp: time}的key的值，也就是用数据的时间戳作为key
                 const horzItemKey = this._horzScaleBehavior.key(time);
+                // 
                 let timePointData = this._pointDataByTimePoint.get(horzItemKey);
                 if (timePointData === undefined) {
-                    // the indexes will be sync later
+                    // 返回  { index: 0, mapping: new Map(), timePoint };
                     timePointData = createEmptyTimePointData(time);
+                    // 保存map
                     this._pointDataByTimePoint.set(horzItemKey, timePointData);
                     isTimeScaleAffected = true;
                 }
                 const row = createPlotRow(time, timePointData.index, item, originalTimes[index], dataToPlotRow, customWhitespaceChecker);
                 timePointData.mapping.set(series, row);
+    
                 return row;
             });
         }
@@ -112,6 +121,7 @@ export class DataLayer {
             this._cleanupPointsData();
         }
         this._setRowsToSeries(series, seriesRows);
+
         let firstChangedPointIndex = -1;
         if (isTimeScaleAffected) {
             // then generate the time scale points
@@ -134,7 +144,7 @@ export class DataLayer {
         return this.setSeriesData(series, []);
     }
     updateSeriesData(series, data, historicalUpdate) {
-        console.log(7777777)
+        console.log(2222, series, data, historicalUpdate)
         const extendedData = data;
         saveOriginalTime(extendedData);
         // convertStringToBusinessDay(data);
