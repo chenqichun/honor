@@ -1,0 +1,9 @@
+.cool-chart {
+    &-widget-container {
+        user-select: none;
+        overflow: hidden;
+        .panel-content-wrap {
+            position: relative;
+        }
+    }
+}

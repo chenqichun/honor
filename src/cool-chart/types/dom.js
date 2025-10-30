@@ -12,3 +12,15 @@ export function setEleStyle(ele, styleObj) {
     Object.entries(styleObj).forEach(([key,value]) => ele.style[key] = value);
     return ele;
 }
+
+export function setEleStyleByKey(ele, key, value) {
+    ele.style[key] = value
+    return ele
+}
+
+export const widgetDefaultOption = {
+    left: null,
+    top: null,
+    width: null,
+    height: null
+}
