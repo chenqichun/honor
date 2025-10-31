@@ -2,8 +2,20 @@
     &-widget-container {
         user-select: none;
         overflow: hidden;
-        .panel-content-wrap {
-            position: relative;
-        }
+    }
+    .panel-content-wrap {
+        position: relative;
+    }
+    .price-axis-container {
+        min-width: 0;
+    }
+    .main-canvas-gui {
+        max-width: 100%;
+        max-height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+    .panel-flex-row {
+        position: relative;
     }
 }

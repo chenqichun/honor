@@ -2,13 +2,14 @@ export function getEleStyle(ele, key) {
     return window.getComputedStyle(ele)[key]
 }
 
-export function createEle(tag = 'div', className) {
+export function createEle(tag = 'div', className, styleObj) {
     const ele = document.createElement(tag)
     if (className) ele.className = className;
+    if (styleObj) setEleStyle(ele, styleObj)
     return ele
 }
 
-export function setEleStyle(ele, styleObj) {
+export function setEleStyle(ele, styleObj = {}) {
     Object.entries(styleObj).forEach(([key,value]) => ele.style[key] = value);
     return ele;
 }

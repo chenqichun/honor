@@ -3,38 +3,51 @@
  */
 import {getDevicePixelRatio, createEle, setAttribute, setEleStyle} from '../types/dom'
 import {getRandomStr} from '../types/common'
-export class CanvasWidget {
+import {isNumber} from '../types/check'
+import { BaseWidget } from './baseWidget'
+export class CanvasWidget extends BaseWidget{
   _drawCanvas;
   _coverCanvas;
-  _wrap;
-  _options;
-  _name;
-  constructor(options){
-    this._options = options;
-    this._name = options.name || getRandomStr();
+  _ele;
+  _parent; 
+  _options = {
+    name: '',
+    width: 0,
+    height: 0,
+    left: 0,
+    top: 0
+  };
+  constructor(parent,options){
+    super(options)
+    this._parent = parent;
+    this._options = {...this._options, ...options} ;
+    this._options.name = options.name || getRandomStr();
     this.createElement();
   }
   createElement(){
-    const {width,height, className = ''} = this._options;
-    this._wrap = createEle('div', `panel-canvas-widget ${className}`);
+    const { className = '', left = 0} = this._options;
+    this._ele = createEle('div', `panel-canvas-widget ${className}`, {position: 'absolute', left: left + 'px',top: 0});
     this._drawCanvas = createEle('canvas');
     this._coverCanvas = createEle('canvas')
-    this._wrap.appendChild(this._drawCanvas)
-    this._wrap.appendChild(this._coverCanvas)
+    this._ele.appendChild(this._drawCanvas)
+    this._ele.appendChild(this._coverCanvas)
     // 设置属性
     setAttribute(this._drawCanvas, {'date-name': 'draw-canvas','aria-hidden': true});
     setAttribute(this._coverCanvas, {'date-name': 'cover-canvas','aria-label': ''}); // 补充品种信息
     // 设置样式
     setEleStyle(this._drawCanvas, this.getDefaultStyles());
     setEleStyle(this._coverCanvas, this.getDefaultStyles());
-    this.setSize(width,height)
+    this.setSize()
   }
   // 设置尺寸和PixelRatio
-  setSize(width,height) {
-    width = parseInt(width);
-    height = parseInt(height);
+  setSize(width, height, left) {
+    width = parseInt(width || this._options.width);
+    height = parseInt(height || this._options.height);
+    this._options.width = width;
+    this._options.height = height;
+    setEleStyle(this._ele, {width: width + 'px', height: height + 'px'})
     const dpRatio = getDevicePixelRatio();
-    // 不使用ctx.scale
+    // 不使用ctx.scale,改变ctx.scale不适合用于交易图表，普通场景适用
     this._drawCanvas.width = parseInt(width * dpRatio)
     this._drawCanvas.height = parseInt(height * dpRatio)
     this._coverCanvas.width = parseInt(width * dpRatio)
@@ -42,13 +55,11 @@ export class CanvasWidget {
 
     setEleStyle(this._drawCanvas, {width: width + 'px', height: height + 'px'});
     setEleStyle(this._coverCanvas, {width: width + 'px', height: height + 'px'});
+    if (isNumber(left)) {
+      setEleStyle(this._ele, {left: left + 'px'});
+    }
   }
-  getNode() {
-    return this._wrap
-  }
-  getName() {
-    return this._name
-  }
+
   getDefaultStyles() {
     return {
       'user-select': 'none', 

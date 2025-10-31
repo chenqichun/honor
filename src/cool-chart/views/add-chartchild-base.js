@@ -18,5 +18,8 @@ export class AddChartChildBase {
         this._ele = createEle('div', this._className);
         this._chartWidget.addChildEle(this._ele)
     }
+    destroyed() {
+        this._ele.remove()
+    }
 
 }
