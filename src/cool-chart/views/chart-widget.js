@@ -17,7 +17,8 @@ import {PanelBottomControl} from './panel-bottom-control'
 import {PanelTooltip} from './panel-toolTip'
 import {PanelWidget} from './panel-widget'
 import { ObserveResizeWH } from '../model/observeResize'
-import { TimeAxisWidget } from './time-axis'
+import { TimeAxisWidget, timeAxisHeight } from './time-axis'
+import { PriceAxisSize } from '../gui/price-axis-size'
 
 export class ChartWidget {
     _allChartContainer; // 所有图表区域
@@ -32,6 +33,7 @@ export class ChartWidget {
     _panelWidgetList = []; // 所有子面板，一定是含有dom元素
     _size =  { left: 0, top: 0, width: 0, height: 0}; // 记录尺寸
     _observerResize;
+    _PriceAxisSize;
     constructor(allChartContainer, options = {...widgetDefaultOption}) {
         this._allChartContainer = allChartContainer;
         this._options = options;
@@ -45,6 +47,8 @@ export class ChartWidget {
         this._panelTooltip = new PanelTooltip(this)
         // 创建时间轴
         this._timeAxisWidget = new TimeAxisWidget(this)
+        // 创建价格轴宽度变化处理
+        this._PriceAxisSize = new PriceAxisSize(this)
         // 监听自身尺寸变化
         this.setOneselfResize();
     }
@@ -67,26 +71,34 @@ export class ChartWidget {
         const { clientWidth, clientHeight} = this._allChartContainer;
         let {width,height, panelWidgetInfoList} = this._options || {};
         const allWidth = width || clientWidth;
-        const allHeight = (height || clientHeight) -  30; 
-        // 如果存在缓存数据
+        const allHeight = (height || clientHeight) -  timeAxisHeight;
+        let list = [
+            {width:allWidth,height: allHeight,showGrogLine: false}
+        ];
+         // 如果存在缓存数据
         if (panelWidgetInfoList?.length) {
             const oleAllHeiht = panelWidgetInfoList.reduce((a,b) => a + b.height, 0);
-            panelWidgetInfoList.forEach(item => {
-                const pw = new PanelWidget(this, {
-                    name: item.name,
-                    width: parseInt(allWidth),
+            list = panelWidgetInfoList.map(e => {
+                return {
+                    ...e,
+                    width: allWidth,
                     height: parseInt(allHeight * item.height / oleAllHeiht),
-                })
-                this._panelWidgetList.push(pw)
+                    showGrogLine: index > 0
+                }
             })
-            
-        } else {
-            const pw = new PanelWidget(this,{
-                    width: parseInt(allWidth),
-                    height: parseInt(allHeight),
-                })
-            this._panelWidgetList.push(pw)
         }
+        list.forEach(item => this.createPanel(item))
+        
+    }
+    createPanel({name,width,height,showGrogLine}) {
+        this._panelWidgetList.push(
+            new PanelWidget(this,{
+                name,
+                width: parseInt(width),
+                height: parseInt(height),
+                showGrogLine
+            })
+        )
     }
     // 添加到contentWrap容器下
     addChildToConentWrap(ele) {
@@ -116,8 +128,11 @@ export class ChartWidget {
         this._timeAxisWidget.destroyed();
         this._panelBottomControl.destroyed();
         this._panelTooltip.destroyed()
+        this._PriceAxisSize.destroyed()
         this._observerResize = null;
+        this._panelWidgetList.forEach(e => e.destroyed?.())
         this._widget_container.remove()
+        
         this._panelWidgetList = null;
     }
     // 获取

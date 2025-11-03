@@ -12,6 +12,9 @@ import {getRandomStr} from '../types/common'
 import { CanvasWidget } from './canvas-widget'
 import { PriceAxisWidget } from './price-axis'
 import { BaseWidget } from './baseWidget'
+import { PanelLegend } from './panel-widget-legend'
+import { PanelControl } from './panel-widget-control'
+import { DrogLine } from './panel-widget-drogline'
 // 现在不需要做正副面版的概念，不管是什么类型的指标，根据
 
 // 面版配置参数
@@ -26,6 +29,9 @@ export class PanelWidget extends BaseWidget {
     _mainArea = new Map();
     _leftPriceAxis;
     _rightPriceAxis;
+    _legend;
+    _control;
+    _drogline;
     _options;
     _chartWidget; // ChartWidget控件
     _indicatorMap = new Map(); // 存放指标的地方
@@ -40,13 +46,22 @@ export class PanelWidget extends BaseWidget {
     }
     createElement() {
         this._ele = createEle('div', 'panel-flex-row');
-        setEleStyle(this._ele, {display: 'flex'});
+        setEleStyle(this._ele, {display: 'flex',position: 'relative'});
+        // 创建拖拽线
+        this._drogline = new DrogLine(this._chartWidget, this, {showGrogLine: this._options.showGrogLine});
+        this._ele.appendChild(this._drogline.getNode());
         // 左边价格y轴
         this._leftPriceAxis = new PriceAxisWidget({height: this._height})
 
         // 创建中间区域
         const mainEl = createEle('div', 'main-canvas-gui',{position: 'relative'});
-        const main_cw = new CanvasWidget(this,{ height: this._height})
+        const legendAndControl = createEle('div', 'panel-legend-control');
+        this._legend = new PanelLegend(this) // 创建legend
+        this._control = new PanelControl(this) // 创建control
+        const main_cw = new CanvasWidget(this,{ height: this._height}) // 创建主区域canvas
+        legendAndControl.appendChild(this._legend.getNode())
+        legendAndControl.appendChild(this._control.getNode())
+        mainEl.appendChild(legendAndControl)
         mainEl.appendChild(main_cw.getNode())
         this._mainArea.set('el',mainEl)
         this._mainArea.set('wg', main_cw)
@@ -82,15 +97,13 @@ export class PanelWidget extends BaseWidget {
             right: this._rightPriceAxis.getWidth(),
         }
     }
-
-    // 是不是独立面版
-    isIndependent() {
-        return this._options.layoutType == layoutTypes.independent
-    }
     destroyed() {
         this._mainArea.clear();
         this._leftPriceAxis.clear();
         this._rightPriceAxis.clear();
+        this._legend.destroyed()
+        this._control.destroyed();
+        this._drogline.destroyed()
         this._ele.remove();
         this._options = null;
     }

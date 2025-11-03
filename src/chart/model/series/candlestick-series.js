@@ -22,6 +22,7 @@ export const createSeries = () => {
          */
         createPaneView: createPaneView,
     };
+   
     return definition;
 };
 export const candlestickSeries = createSeries();

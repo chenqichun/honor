@@ -8,10 +8,13 @@ import {
 } from '../types/dom'
 import { isNumber } from '../types/check'
 import { BaseWidget } from './baseWidget'
+
+export const  timeAxisHeight = 30;
+
 export class TimeAxisWidget extends BaseWidget {
     _options = {
         width: 0,
-        height: 30,
+        height: timeAxisHeight,
         leftWidth: 0,
         rightWidth: 0
     };

@@ -34,7 +34,10 @@ const routes = [
     path: '/coolChart',
     component: () => import("@/views/coolChart.vue")
   },
-  
+  {
+    path: '/my-candlestick',
+    component: () => import("@/views/my-candlestick.vue")
+  },
 ]
 const router = new Router({
   mode: 'history', // 使用 HTML5 History 模式

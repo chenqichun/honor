@@ -4,8 +4,8 @@ export const customStyleDefaults = {
 export const seriesOptionsDefaults = {
     title: '',
     visible: true,
-    lastValueVisible: true,
-    priceLineVisible: true,
+    lastValueVisible: true, // 就是y轴上的最新价格
+    priceLineVisible: true, // 就是y轴上的最新价格线
     priceLineSource: 0 /* PriceLineSource.LastBar */,
     priceLineWidth: 1,
     priceLineColor: '',

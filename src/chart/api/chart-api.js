@@ -84,8 +84,6 @@ export class ChartApi {
     _panes = new WeakMap();
     constructor(container, horzScaleBehavior, options) {
         this._dataLayer = new DataLayer(horzScaleBehavior);
-        console.log(this._dataLayer,666777)
-        window.zzv = this._dataLayer
         const internalOptions = (options === undefined) ?
             clone(chartOptionsDefaults()) :
             merge(clone(chartOptionsDefaults()), toInternalOptions(options));
@@ -272,12 +270,17 @@ export class ChartApi {
         return this._horzScaleBehavior;
     }
     _addSeriesImpl(definition, options = {}, paneIndex = 0) {
+        // 格式对不对
         assert(isSeriesDefinition(definition));
+        // 格式化精度
         patchPriceFormat(options.priceFormat);
         if (definition.type === 'Candlestick') {
+            // 对柱状图的边框颜色进行处理
             fillUpDownCandlesticksColors(options);
         }
+        // 合并参数
         const strictOptions = merge(clone(seriesOptionsDefaults), clone(definition.defaultOptions), options);
+        
         const createPaneView = definition.createPaneView;
         const series = new Series(this._chartWidget.model(), definition.type, strictOptions, createPaneView, definition.customPaneView);
         this._chartWidget.model().addSeriesToPane(series, paneIndex);
