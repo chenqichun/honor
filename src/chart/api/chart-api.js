@@ -283,6 +283,7 @@ export class ChartApi {
         
         const createPaneView = definition.createPaneView;
         const series = new Series(this._chartWidget.model(), definition.type, strictOptions, createPaneView, definition.customPaneView);
+
         this._chartWidget.model().addSeriesToPane(series, paneIndex);
         const res = new SeriesApi(series, this, this, this, this._horzScaleBehavior, (pane) => this._getPaneApi(pane));
         this._seriesMap.set(res, series);

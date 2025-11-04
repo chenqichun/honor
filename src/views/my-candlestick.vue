@@ -26,9 +26,13 @@ const data = [
 ];
 
 candlestickSeries.setData(data);
-// setTimeout(() => {
-//   candlestickSeries.setData(data);
-// }, 0);
+chart.timeScale().subscribeVisibleTimeRangeChange(data => {
+  console.log(111,data, chart.timeScale().getVisibleRange(),
+  chart.timeScale().getVisibleLogicalRange()
+  )
+})
+
+
 chart.timeScale().fitContent();
   },
 };
