@@ -291,6 +291,7 @@ export class PriceAxisWidget {
         const model = this._pane.chart().model();
         const pane = this._pane.state();
         this._mousedown = true;
+        console.log(222, this._priceScale)
         model.startScalePrice(pane, this._priceScale, e.localY);
     }
     _pressedMouseMoveEvent(e) {
@@ -385,15 +386,19 @@ export class PriceAxisWidget {
         ctx.fillRect(left, 0, borderSize, bitmapSize.height);
     }
     _drawTickMarks(target) {
+        
         if (this._size === null || this._priceScale === null) {
             return;
         }
         const tickMarks = this._priceScale.marks();
+        console.log(this._priceScale,3333)
         const priceScaleOptions = this._priceScale.options();
         const rendererOptions = this.rendererOptions();
         const tickMarkLeftX = this._isLeft ?
             (this._size.width - rendererOptions.tickLength) :
             0;
+        // 绘制y轴刻度
+
         if (priceScaleOptions.borderVisible && priceScaleOptions.ticksVisible) {
             target.useBitmapCoordinateSpace(({ context: ctx, horizontalPixelRatio, verticalPixelRatio }) => {
                 ctx.fillStyle = priceScaleOptions.borderColor;

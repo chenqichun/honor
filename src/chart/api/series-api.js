@@ -13,7 +13,7 @@ export class SeriesApi {
     _chartApi;
     _priceScaleApiProvider;
     _horzScaleBehavior;
-    _dataChangedDelegate = new Delegate();
+    _dataChangedDelegate = new Delegate(); 
     _paneApiGetter;
     constructor(series, dataUpdatesConsumer, priceScaleApiProvider, chartApi, horzScaleBehavior, paneApiGetter) {
         this._series = series;
@@ -82,10 +82,11 @@ export class SeriesApi {
         return result;
     }
     setData(data) {
-        checkItemsAreOrdered(data, this._horzScaleBehavior);
-        checkSeriesValuesType(this._series.seriesType(), data);
+        checkItemsAreOrdered(data, this._horzScaleBehavior); // 可以忽略这个方法
+        checkSeriesValuesType(this._series.seriesType(), data); // 检查数据是否高开收低，可以忽略
+        // this._dataUpdatesConsumer就是 ChartApi的实例
         this._dataUpdatesConsumer.applyNewData(this._series, data);
-        this._onDataChanged('full');
+        this._onDataChanged('full'); // 可以无视
     }
     update(bar, historicalUpdate = false) {
         checkSeriesValuesType(this._series.seriesType(), [bar]);

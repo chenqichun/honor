@@ -51,6 +51,7 @@ export class PaneWidget {
         this._state = state;
         this._state.onDestroyed().subscribe(this._onStateDestroyed.bind(this), this, true);
         this._paneCell = document.createElement('td');
+        this._paneCell.className = "zzz main-draw-area"
         this._paneCell.style.padding = '0';
         this._paneCell.style.position = 'relative';
         const paneWrapper = document.createElement('div');
@@ -59,8 +60,10 @@ export class PaneWidget {
         paneWrapper.style.position = 'relative';
         paneWrapper.style.overflow = 'hidden';
         this._leftAxisCell = document.createElement('td');
+        this._leftAxisCell.className = "left-axis"
         this._leftAxisCell.style.padding = '0';
         this._rightAxisCell = document.createElement('td');
+        this._rightAxisCell.className = "right-axis"
         this._rightAxisCell.style.padding = '0';
         this._paneCell.appendChild(paneWrapper);
         this._canvasBinding = createBoundCanvas(paneWrapper, size({ width: 16, height: 16 }));

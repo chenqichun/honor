@@ -231,6 +231,7 @@ export class ChartModel {
     }
     scalePriceTo(pane, priceScale, x) {
         pane.scalePriceTo(priceScale, x);
+        
         this.updateCrosshair();
         this._invalidate(this._paneInvalidationMask(pane, 2 /* InvalidationLevel.Light */));
     }

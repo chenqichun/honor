@@ -9,3 +9,5 @@ let gInt = v => Math.round(v) + diff;
 ctx.beginPath();
 ctx.moveTo(gInt(p1.x),gInt(p1.y))
 p2 && ctx.lineTo(gInt(p2.x),gInt(p2.y));
+
+# Delegate 是一个简单订阅

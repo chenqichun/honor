@@ -8,6 +8,7 @@ function upperBoundItemsCompare(item, time) {
 export function visibleTimedValues(items, range, extendedRange) {
     const firstBar = range.left();
     const lastBar = range.right();
+
     const from = lowerBound(items, firstBar, lowerBoundItemsCompare);
     const to = upperBound(items, lastBar, upperBoundItemsCompare);
     if (!extendedRange) {

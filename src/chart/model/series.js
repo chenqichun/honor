@@ -152,8 +152,12 @@ export class Series extends PriceDataSource {
         this.model().updateCrosshair();
         this._paneView.update('options');
     }
+    // 价格y轴相关计算
     setData(data, updateInfo) {
+        
         this._data.setData(data);
+      
+        
         this._paneView.update('data');
         if (this._lastPriceAnimationPaneView !== null) {
             if (updateInfo && updateInfo.lastBarUpdatedOrNewBarsAddedToTheRight) {
@@ -163,8 +167,9 @@ export class Series extends PriceDataSource {
                 this._lastPriceAnimationPaneView.onDataCleared();
             }
         }
-        const sourcePane = this.model().paneForSource(this);
-        this.model().recalculatePane(sourcePane);
+        
+       const sourcePane = this.model().paneForSource(this);
+       this.model().recalculatePane(sourcePane);
         this.model().updateSource(this);
         this.model().updateCrosshair();
         this.model().lightUpdate();

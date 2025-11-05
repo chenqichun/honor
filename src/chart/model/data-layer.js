@@ -138,6 +138,9 @@ export class DataLayer {
             newTimeScalePoints.sort((t1, t2) => this._horzScaleBehavior.key(t1.time) - this._horzScaleBehavior.key(t2.time));
             firstChangedPointIndex = this._replaceTimeScalePoints(newTimeScalePoints);
         }
+        /*
+            this._seriesRowsBySeries.get(series) 就是原k线数据格式话后的数据，seriesUpdateInfo 这里可以先忽略不看
+        */
         return this._getUpdateResponse(series, firstChangedPointIndex, seriesUpdateInfo(this._seriesRowsBySeries.get(series), prevSeriesRows, this._horzScaleBehavior));
     }
     removeSeries(series) {
@@ -349,16 +352,25 @@ export class DataLayer {
         return baseIndex;
     }
     _getUpdateResponse(updatedSeries, firstChangedPointIndex, info) {
+        
         const dataUpdateResponse = this._emptyUpdateResponse();
+        /**
+         * {
+         *   series: new Map();
+         *   baseIndex: k线数据的最大索引
+         * }
+         */
         if (firstChangedPointIndex !== -1) {
             // TODO: it's possible to make perf improvements by checking what series has data after firstChangedPointIndex
             // but let's skip for now
             this._seriesRowsBySeries.forEach((data, s) => {
+
                 dataUpdateResponse.series.set(s, {
                     data,
                     info: s === updatedSeries ? info : undefined,
                 });
             });
+     
             // if the series data was set to [] it will have already been removed from _seriesRowBySeries
             // meaning the forEach above won't add the series to the data update response
             // so we handle that case here
@@ -373,6 +385,18 @@ export class DataLayer {
             // if no seriesData found that means that we just removed the series
             dataUpdateResponse.series.set(updatedSeries, { data: seriesData || [], info });
         }
+        /**
+         * 返回 {
+         *     series，
+         *     timeScale {
+         *        baseIndex： 最大数据索引，
+         *        firstChangedPointIndex： 0，
+         *        points：所有点数
+         *     }
+
+
+             }
+         */
         return dataUpdateResponse;
     }
     _emptyUpdateResponse() {

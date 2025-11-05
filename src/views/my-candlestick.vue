@@ -25,13 +25,8 @@ const data = [
   { open: 10.93, high: 11.53, low: 10.76, close: 10.96, time: 1643205476 }
 ];
 
-candlestickSeries.setData(data);
-chart.timeScale().subscribeVisibleTimeRangeChange(data => {
-  console.log(111,data, chart.timeScale().getVisibleRange(),
-  chart.timeScale().getVisibleLogicalRange()
-  )
-})
 
+candlestickSeries.setData(data);
 
 chart.timeScale().fitContent();
   },

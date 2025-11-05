@@ -21,6 +21,7 @@ export class PriceAxisViewRenderer {
         }
         const textColor = this._data.color;
         const backgroundColor = this._commonData.background;
+        
         const geometry = target.useBitmapCoordinateSpace((scope) => {
             const ctx = scope.context;
             ctx.font = rendererOptions.font;

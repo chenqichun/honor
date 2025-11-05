@@ -13,6 +13,7 @@ export class PriceRangeImpl {
     constructor(minValue, maxValue) {
         this._minValue = minValue;
         this._maxValue = maxValue;
+       // minValue, maxValue初始值是k线数据里开高收低里的最大最小值
     }
     equals(pr) {
         if (pr === null) {
@@ -41,6 +42,7 @@ export class PriceRangeImpl {
         }
         return new PriceRangeImpl(computeFiniteResult(Math.min, this.minValue(), anotherRange.minValue(), -Infinity), computeFiniteResult(Math.max, this.maxValue(), anotherRange.maxValue(), Infinity));
     }
+    // 缩放y轴的时候会触发这个
     scaleAroundCenter(coeff) {
         if (!isNumber(coeff)) {
             return;
@@ -56,6 +58,7 @@ export class PriceRangeImpl {
         minDelta *= coeff;
         this._maxValue = center + maxDelta;
         this._minValue = center + minDelta;
+       
     }
     shift(delta) {
         if (!isNumber(delta)) {

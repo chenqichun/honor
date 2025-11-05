@@ -14,6 +14,7 @@ export function checkItemsAreOrdered(data, bh, allowDuplicates = false) {
     if (data.length === 0) {
         return;
     }
+  
     let prevTime = bh.key(data[0].time);
     for (let i = 1; i < data.length; ++i) {
         const currentTime = bh.key(data[i].time);

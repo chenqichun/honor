@@ -147,6 +147,7 @@ export class ChartApi {
         this._seriesMap.delete(seriesApi);
         this._seriesMapReversed.delete(series);
     }
+    // 初始化数据接口
     applyNewData(series, data) {
         this._sendUpdateToChart(this._dataLayer.setSeriesData(series, data));
     }
@@ -291,8 +292,11 @@ export class ChartApi {
         return res;
     }
     _sendUpdateToChart(update) {
+        // model -> chartModel
         const model = this._chartWidget.model();
+ 
         model.updateTimeScale(update.timeScale.baseIndex, update.timeScale.points, update.timeScale.firstChangedPointIndex);
+        // 价格y轴相关计算
         update.series.forEach((value, series) => series.setData(value.data, value.info));
         model.timeScale().recalculateIndicesWithData();
         model.recalculateAllPanes();

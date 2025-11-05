@@ -277,7 +277,6 @@ export class SeriesCandlesticksPaneView {
         this._series = series;
         this._model = model;
         this._extendedVisibleRange = false;
-        console.log(model)
     }
     update(updateType) {
         this._invalidated = true;
@@ -321,10 +320,12 @@ export class SeriesCandlesticksPaneView {
     _makeValidImpl() {
         const priceScale = this._series.priceScale();
         const timeScale = this._model.timeScale();
+     
         this._clearVisibleRange();
         if (timeScale.isEmpty() || priceScale.isEmpty()) {
             return;
         }
+        // 得出可视范围的计算逻辑索引，画布的左边是最小索引，可以是负数， 最大可以超过数据的
         const visibleBars = timeScale.visibleStrictRange();
         if (visibleBars === null) {
             return;
@@ -333,16 +334,18 @@ export class SeriesCandlesticksPaneView {
             return;
         }
         const firstValue = this._series.firstValue();
+        
         if (firstValue === null) {
             return;
         }
+        // 算出可视范围内真正数据索引
         this._itemsVisibleRange = visibleTimedValues(this._items, visibleBars, this._extendedVisibleRange);
-     
         this._convertToCoordinates(priceScale, timeScale, firstValue.value);
         this._prepareRendererData();
     }
 
     _convertToCoordinates(priceScale, timeScale, firstValue) {
+        // firstValue 是第一个数据的收盘价
         timeScale.indexesToCoordinates(this._items, undefinedIfNull(this._itemsVisibleRange));
         priceScale.barPricesToCoordinates(this._items, firstValue, undefinedIfNull(this._itemsVisibleRange));
     }

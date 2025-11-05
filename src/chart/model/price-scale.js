@@ -313,11 +313,14 @@ export class PriceScale {
         this.updateFormatter();
         this.invalidateSourcesCache();
     }
+    // 第一个k线数据的收盘价
     firstValue() {
+        
         // TODO: cache the result
         let result = null;
         for (const source of this._dataSources) {
             const firstValue = source.firstValue();
+
             if (firstValue === null) {
                 continue;
             }
@@ -342,6 +345,7 @@ export class PriceScale {
         if (this._marksCache !== null && (firstValueIsNull || this._marksCache.firstValueIsNull === firstValueIsNull)) {
             return this._marksCache.marks;
         }
+        
         this._markBuilder.rebuildTickMarks();
         const marks = this._markBuilder.marks();
         this._marksCache = { marks, firstValueIsNull };
@@ -358,12 +362,15 @@ export class PriceScale {
         if (this._scaleStartPoint !== null || this._priceRangeSnapshot !== null) {
             return;
         }
+       
         if (this.isEmpty()) {
             return;
         }
         // invert x
         this._scaleStartPoint = this._height - x;
+        
         this._priceRangeSnapshot = ensureNotNull(this.priceRange()).clone();
+
     }
     scaleTo(x) {
         if (this.isPercentage() || this.isIndexedTo100()) {
@@ -382,7 +389,9 @@ export class PriceScale {
         }
         let scaleCoeff = (this._scaleStartPoint + (this._height - 1) * 0.2) / (x + (this._height - 1) * 0.2);
         const newPriceRange = ensureNotNull(this._priceRangeSnapshot).clone();
+    
         scaleCoeff = Math.max(scaleCoeff, 0.1);
+        // newPriceRange就是PriceRangeImpl的实例，经过下面scaleAroundCenter计算，得到最新的最大最小价格_minValue，_maxValue
         newPriceRange.scaleAroundCenter(scaleCoeff);
         this.setPriceRange(newPriceRange);
     }
