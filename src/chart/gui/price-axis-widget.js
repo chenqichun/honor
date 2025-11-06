@@ -391,7 +391,7 @@ export class PriceAxisWidget {
             return;
         }
         const tickMarks = this._priceScale.marks();
-        console.log(this._priceScale,3333)
+        
         const priceScaleOptions = this._priceScale.options();
         const rendererOptions = this.rendererOptions();
         const tickMarkLeftX = this._isLeft ?

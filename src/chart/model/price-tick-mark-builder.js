@@ -22,13 +22,16 @@ export class PriceTickMarkBuilder {
         const scaleHeight = this._priceScale.height();
         const markHeight = this._tickMarkHeight();
         const maxTickSpan = (high - low) * markHeight / scaleHeight;
+      
         const spanCalculator1 = new PriceTickSpanCalculator(this._base, [2, 2.5, 2]);
         const spanCalculator2 = new PriceTickSpanCalculator(this._base, [2, 2, 2.5]);
         const spanCalculator3 = new PriceTickSpanCalculator(this._base, [2.5, 2, 2]);
         const spans = [];
         spans.push(spanCalculator1.tickSpan(high, low, maxTickSpan), spanCalculator2.tickSpan(high, low, maxTickSpan), spanCalculator3.tickSpan(high, low, maxTickSpan));
-        return min(spans);
+   
+        return spanCalculator1.tickSpan(high, low, maxTickSpan);
     }
+    // 瓜分y轴刻度，也就是y轴刻度的处理
     rebuildTickMarks() {
         const priceScale = this._priceScale;
         const firstValue = priceScale.firstValue();
@@ -36,10 +39,13 @@ export class PriceTickMarkBuilder {
             this._marks = [];
             return;
         }
+       
         const scaleHeight = priceScale.height();
         const bottom = this._coordinateToLogicalFunc(scaleHeight - 1, firstValue);
         const top = this._coordinateToLogicalFunc(0, firstValue);
+     
         const extraTopBottomMargin = this._priceScale.options().entireTextOnly ? this._fontHeight() / 2 : 0;
+      
         const minCoord = extraTopBottomMargin;
         const maxCoord = scaleHeight - 1 - extraTopBottomMargin;
         const high = Math.max(bottom, top);
@@ -49,6 +55,8 @@ export class PriceTickMarkBuilder {
             return;
         }
         const span = this.tickSpan(high, low);
+        
+        window.priceScale = priceScale
         this._updateMarks(firstValue, span, high, low, minCoord, maxCoord);
         if (priceScale.hasVisibleEdgeMarks() && this._shouldApplyEdgeMarks(span, low, high)) {
             const padding = this._priceScale.getEdgeMarksPadding();
@@ -59,11 +67,13 @@ export class PriceTickMarkBuilder {
         for (let i = 0; i < this._marks.length; i++) {
             this._marks[i].label = labels[i];
         }
+        
     }
     marks() {
         return this._marks;
     }
     _fontHeight() {
+        
         return this._priceScale.fontSize();
     }
     _tickMarkHeight() {
@@ -107,6 +117,7 @@ export class PriceTickMarkBuilder {
                 span = this.tickSpan(logical * sign, low);
             }
         }
+        console.log(marks,88)
         marks.length = targetIndex;
     }
     _applyEdgeMarks(firstValue, span, minCoord, maxCoord, minPadding, maxPadding) {

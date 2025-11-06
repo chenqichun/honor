@@ -158,6 +158,7 @@ export class PriceScale {
         this._height = value;
         this._invalidateInternalHeightCache();
         this._marksCache = null;
+        console.log('sethight')
     }
     internalHeight() {
         if (this._internalHeightCache) {
@@ -180,8 +181,10 @@ export class PriceScale {
         }
         this._marksCache = null;
         this._priceRange = newPriceRange;
+        console.log('set111111111', newPriceRange)
     }
     setCustomPriceRange(newPriceRange) {
+        console.log('set2')
         this.setPriceRange(newPriceRange);
         this._toggleCustomPriceRange(newPriceRange !== null);
     }
@@ -309,13 +312,13 @@ export class PriceScale {
             });
             // if no sources on price scale let's clear price range cache as well as enabling auto scale
             this.setPriceRange(null);
+            console.log('set6')
         }
         this.updateFormatter();
         this.invalidateSourcesCache();
     }
     // 第一个k线数据的收盘价
     firstValue() {
-        
         // TODO: cache the result
         let result = null;
         for (const source of this._dataSources) {
@@ -334,6 +337,7 @@ export class PriceScale {
         return this._options.invertScale;
     }
     marks() {
+        
         const firstValueIsNull = this.firstValue() === null;
         // do not recalculate marks if firstValueIsNull is true because in this case we'll always get empty result
         // this could happen in case when a series had some data and then you set empty data to it (in a simplified case)
@@ -342,10 +346,11 @@ export class PriceScale {
         // as one of possible examples for this situation could be the following:
         // let's say you have a study/indicator attached to a price scale and then you decide to stop it, i.e. remove its data because of its visibility
         // a user will see the previous marks on the scale until you turn on your study back or remove it from the chart completely
+
         if (this._marksCache !== null && (firstValueIsNull || this._marksCache.firstValueIsNull === firstValueIsNull)) {
             return this._marksCache.marks;
         }
-        
+        console.log(8888, this._marksCache?.firstValueIsNull)
         this._markBuilder.rebuildTickMarks();
         const marks = this._markBuilder.marks();
         this._marksCache = { marks, firstValueIsNull };
@@ -394,6 +399,7 @@ export class PriceScale {
         // newPriceRange就是PriceRangeImpl的实例，经过下面scaleAroundCenter计算，得到最新的最大最小价格_minValue，_maxValue
         newPriceRange.scaleAroundCenter(scaleCoeff);
         this.setPriceRange(newPriceRange);
+        console.log('set3')
     }
     endScale() {
         if (this.isPercentage() || this.isIndexedTo100()) {
@@ -431,6 +437,7 @@ export class PriceScale {
         const newPriceRange = ensureNotNull(this._priceRangeSnapshot).clone();
         newPriceRange.shift(priceDelta);
         this.setPriceRange(newPriceRange, true);
+        console.log('set4')
         this._marksCache = null;
     }
     endScroll() {
@@ -505,6 +512,7 @@ export class PriceScale {
         return this.fontSize() / 2;
     }
     updateFormatter() {
+        console.log('updateFormatter')
         this._marksCache = null;
         let zOrder = Infinity;
         this._formatterSource = null;
@@ -585,13 +593,17 @@ export class PriceScale {
         if (this.isEmpty()) {
             return 0;
         }
+        // 获取高度
         const invCoordinate = this.invertedCoordinate(coordinate);
+        // 价格范围，可以获取到最大值最小值
         const range = ensureNotNull(this.priceRange());
+        
         const logical = range.minValue() + range.length() *
             ((invCoordinate - this._bottomMarginPx()) / (this.internalHeight() - 1));
         return this.isLog() ? fromLog(logical, this._logFormula) : logical;
     }
     _onIsInvertedChanged() {
+        console.log('_onIsInvertedChanged')
         this._marksCache = null;
         this._markBuilder.rebuildTickMarks();
     }
@@ -600,12 +612,15 @@ export class PriceScale {
         if (this.isCustomPriceRange() && !this.isAutoScale()) {
             return;
         }
+        // 拿到可视区域范围
         const visibleBars = this._invalidatedForRange.visibleBars;
+        
         if (visibleBars === null) {
             return;
         }
         let priceRange = null;
         const sources = this.sourcesForAutoScale();
+  
         let marginAbove = 0;
         let marginBelow = 0;
         for (const source of sources) {
@@ -653,6 +668,7 @@ export class PriceScale {
             this._marginAbove = marginAbove;
             this._marginBelow = marginBelow;
             this._marksCache = null;
+            console.log('_invalidateInternalHeightCache')
             this._invalidateInternalHeightCache();
         }
         if (priceRange !== null) {
@@ -690,6 +706,7 @@ export class PriceScale {
                 this._logFormula = logFormulaForPriceRange(null);
             }
         }
+      
     }
     _getCoordinateTransformer() {
         if (this.isPercentage()) {

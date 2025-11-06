@@ -18,7 +18,7 @@ import {PanelTooltip} from './panel-toolTip'
 import {PanelWidget} from './panel-widget'
 import { ObserveResizeWH } from '../model/observeResize'
 import { TimeAxisWidget, timeAxisHeight } from './time-axis'
-import { PriceAxisSize } from '../model/price-axis-size'
+import { PriceAxisSize } from '../model/price-axis/price-axis-size'
 
 export class ChartWidget {
     _allChartContainer; // 所有图表区域
