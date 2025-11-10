@@ -1,10 +1,11 @@
 /**
  * 每个容器都有两个canvas,一个用于主绘制，另一个用于鼠标事件
  */
-import {getDevicePixelRatio, createEle, setAttribute, setEleStyle} from '../types/dom'
+import { createEle, setAttribute, setEleStyle} from '../types/dom'
 import {getRandomStr} from '../types/common'
 import {isNumber} from '../types/check'
 import { BaseWidget } from './baseWidget'
+import { ratioPx } from '../render/canvas'
 export class CanvasWidget extends BaseWidget{
   _drawCanvas;
   _coverCanvas;
@@ -46,12 +47,12 @@ export class CanvasWidget extends BaseWidget{
     this._options.width = width;
     this._options.height = height;
     setEleStyle(this._ele, {width: width + 'px', height: height + 'px'})
-    const dpRatio = getDevicePixelRatio();
+
     // 不使用ctx.scale,改变ctx.scale不适合用于交易图表，普通场景适用
-    this._drawCanvas.width = parseInt(width * dpRatio)
-    this._drawCanvas.height = parseInt(height * dpRatio)
-    this._coverCanvas.width = parseInt(width * dpRatio)
-    this._coverCanvas.height = parseInt(height * dpRatio)
+    this._drawCanvas.width = ratioPx(width)
+    this._drawCanvas.height = ratioPx(height)
+    this._coverCanvas.width = ratioPx(width)
+    this._coverCanvas.height = ratioPx(height)
 
     setEleStyle(this._drawCanvas, {width: width + 'px', height: height + 'px'});
     setEleStyle(this._coverCanvas, {width: width + 'px', height: height + 'px'});
@@ -72,8 +73,14 @@ export class CanvasWidget extends BaseWidget{
   coverCanvas() {
     return this._coverCanvas
   }
+  coverCtx() {
+    return this._coverCanvas.getContext('2d')
+  }
   drawCanvas() {
     return this._drawCanvas
+  }
+  drawCtx() {
+    return this._drawCanvas.getContext('2d')
   }
   destroyed() {
     

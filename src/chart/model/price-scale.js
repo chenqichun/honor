@@ -396,6 +396,7 @@ export class PriceScale {
         scaleCoeff = Math.max(scaleCoeff, 0.1);
         // newPriceRange就是PriceRangeImpl的实例，经过下面scaleAroundCenter计算，得到最新的最大最小价格_minValue，_maxValue
         newPriceRange.scaleAroundCenter(scaleCoeff);
+        console.log(scaleCoeff,22222)
         this.setPriceRange(newPriceRange);
        
     }

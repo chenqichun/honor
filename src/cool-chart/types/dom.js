@@ -26,9 +26,6 @@ export const widgetDefaultOption = {
     height: null
 }
 
-export function getDevicePixelRatio() {
-    return window.devicePixelRatio
-}
 
 export function setAttribute(ele, attrObj) {
     Object.entries(attrObj).forEach(([key,value]) => ele.setAttribute(key, value));

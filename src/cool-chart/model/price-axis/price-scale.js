@@ -22,7 +22,6 @@ export const defaultOptions = {
     minValue: 0, // k线可视范围最小价格
     precision: 2, // 精度
     fontSize: 12,
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif"
 }
 
 export class PriceScale {
@@ -38,7 +37,9 @@ export class PriceScale {
     _startPoint = null; // 鼠标按下的点
     _calcPriceSnapshot = null;
     _scaleRatio = 1; // y轴缩放倍率
-    constructor(options) {
+    _priceAxisChild; // PriceAxisChild 实例
+    constructor(priceAxisChild,options) {
+        this._priceAxisChild = priceAxisChild
         this.mergeOtions(options)
         this.createTickMarkData()
     }
@@ -136,11 +137,12 @@ export class PriceScale {
     }
 
     // 划分y轴刻度
-    createTickMarkData(options) {
+    createTickMarkData(options, isForceUpdate = false) {
         const height = this.height();
         const {min, max} = this._originPriceRange()
         if (
-            this._cacheMark 
+            !isForceUpdate
+            && this._cacheMark 
             && this._cacheMark.min === min
             && this._cacheMark.max === max
             && this._cacheMark.height === height
@@ -148,18 +150,21 @@ export class PriceScale {
             return;
         }
         const {bottomValue, topValue, tickDiffValue} = options || {}
-        const bottom = bottomValue ?? this._originCoordinateToPrice(height)
-        const top = topValue ?? this._originCoordinateToPrice(0)
+        const bottom =  this._originCoordinateToPrice(height)
+        const top =  this._originCoordinateToPrice(0)
+     
         const minValue = this._calcMinValue = Math.min(bottom, top)
         const maxValue = this._calcMaxValue = Math.max(bottom, top)
         const tickDiff = tickDiffValue || this.tickDiff(maxValue, minValue)
         this._marks = [];
+        console.log(minValue, maxValue, this._scaleRatio)
         // 从最大到最小价格划分
         const mod = maxValue % tickDiff
         for (let priceTick =  maxValue - mod; priceTick > minValue; priceTick -= tickDiff) {
             this._marks.push({
                 priceTick,
-                priceTickLabel: priceTick.toFixed(this.precision())
+                priceTickLabel: priceTick.toFixed(this.precision()),
+                pixel: this.priceToCoordinate(priceTick)
             })
         }
         this._cacheMark = {
@@ -168,6 +173,7 @@ export class PriceScale {
             height,
             tickDiffValue: tickDiff
         }
+        this._priceAxisChild.render();
     }
     // 设置价格轴标签之间的价差为多少
     tickDiff(max, min) {
@@ -181,8 +187,8 @@ export class PriceScale {
     }
     // 传入倍率重设y轴最大最小计算值
     resetCalcPriceRangeByRatio(ratio) {
-        const max = this._calcMaxValue
-        const min = this._calcMinValue
+        const max = this._options.maxValue
+        const min = this._options.minValue
         if (max - min === 0) return;
         const center = (max + min) / 2;
         let maxDelta = max - center;
@@ -190,28 +196,30 @@ export class PriceScale {
         maxDelta *= ratio
         minDelta *= ratio;
         this._scaleRatio = ratio;
-        this._calcMaxValue = center + maxDelta
-        this._calcMinValue = center + minDelta
+        this._options.maxValue = center + maxDelta
+        this._options.minValue = center + minDelta
     }
     // 鼠标缩放开始
     startScale(y) {
         if (this.isPercentage() || this.isIndexedTo100())  return;
         if (this.isEmpty()) return;
         if (this._startPoint) return;
-        this._startPoint = y;
+        this._startPoint = this.height() - y;
         this._calcPriceSnapshot = {...this.getCalcPriceRange()}
     }
     scaleTo(y) {
         if (this.isPercentage() || this.isIndexedTo100())  return;
         if (!this._startPoint) return;
-        let scaleRatio = (y + this.height() * 0.2) / (this._startPoint + this.height() * 0.2);
+        y = this.height() - y;
+
+        let scaleRatio =  (this._startPoint + this.height() * 0.2) / (y + this.height() * 0.2);
         scaleRatio = Math.max(scaleRatio, 0.1)
         this.setFixed(false)
         this.resetCalcPriceRangeByRatio(scaleRatio)
         this.createTickMarkData({
             bottomValue: this._calcMinValue, 
             topValue: this._calcMaxValue,
-        })
+        },true)
     }
     endScale() {
         if (this.isPercentage() || this.isIndexedTo100()) {

@@ -5,16 +5,20 @@ export class PriceAxisHandler {
     _mouseDownStatus = false;
     _lastThrottleTime = Date.now();
     _priceScale; // PriceScale实例
-    _canvasWidget;
-    constructor(canvasWidget,options) {
-        this._canvasWidget = canvasWidget;
+    _priceAxisChild; // PriceAxisChild实例
+    constructor(priceAxisChild,options) {
+        this._priceAxisChild = priceAxisChild;
         this._options = options || {}
-        this._priceScale = new PriceScale(options)
-        this.init()
+        this._priceScale = new PriceScale(priceAxisChild, options)
+        this.init();
     }
 
     init() {
-        this._canvasWidget.coverCanvas().addEventListener('mousedown', this.mousedown) 
+        this.targetEl().addEventListener('mousedown', this.mousedown) 
+    }
+
+    targetEl() {
+        return this._priceAxisChild.widget().coverCanvas()
     }
 
     getPriceScale() {
@@ -33,10 +37,11 @@ export class PriceAxisHandler {
     }
     mousemove = e => {
         const duration = 10
-        if (Date.now() - this._lastThrottleTime > duration) {
-            this._lastThrottleTime = Date.now()
-            this._priceScale.scaleTo(e.clientY)
-        }
+        // if (Date.now() - this._lastThrottleTime > duration) {
+            
+        // }
+        this._lastThrottleTime = Date.now()
+        this._priceScale.scaleTo(e.clientY)
     }
     mouseup = () => {
         this._mouseDownStatus = false;
@@ -46,7 +51,7 @@ export class PriceAxisHandler {
     }
 
     destroyed() {
-        this._targetEl.removeEventListener('mousedown', this.mousedown)
+        this.targetEl().removeEventListener('mousedown', this.mousedown)
         document.removeEventListener('mousemove', this.mousemove)
         document.removeEventListener('mouseup', this.mouseup)
     }
