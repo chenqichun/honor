@@ -24,12 +24,11 @@ export class PriceTickMarkBuilder {
         const maxTickSpan = (high - low) * markHeight / scaleHeight;
       
         const spanCalculator1 = new PriceTickSpanCalculator(this._base, [2, 2.5, 2]);
-        const spanCalculator2 = new PriceTickSpanCalculator(this._base, [2, 2, 2.5]);
-        const spanCalculator3 = new PriceTickSpanCalculator(this._base, [2.5, 2, 2]);
+        // const spanCalculator2 = new PriceTickSpanCalculator(this._base, [2, 2, 2.5]);
+        // const spanCalculator3 = new PriceTickSpanCalculator(this._base, [2.5, 2, 2]);
         const spans = [];
-        spans.push(spanCalculator1.tickSpan(high, low, maxTickSpan), spanCalculator2.tickSpan(high, low, maxTickSpan), spanCalculator3.tickSpan(high, low, maxTickSpan));
-   
-        return spanCalculator1.tickSpan(high, low, maxTickSpan);
+        const res = spanCalculator1.tickSpan(high, low, maxTickSpan);
+        return res
     }
     // 瓜分y轴刻度，也就是y轴刻度的处理
     rebuildTickMarks() {
@@ -55,7 +54,7 @@ export class PriceTickMarkBuilder {
             return;
         }
         const span = this.tickSpan(high, low);
-        
+       
         window.priceScale = priceScale
         this._updateMarks(firstValue, span, high, low, minCoord, maxCoord);
         if (priceScale.hasVisibleEdgeMarks() && this._shouldApplyEdgeMarks(span, low, high)) {

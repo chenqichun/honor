@@ -346,11 +346,9 @@ export class PriceScale {
         // as one of possible examples for this situation could be the following:
         // let's say you have a study/indicator attached to a price scale and then you decide to stop it, i.e. remove its data because of its visibility
         // a user will see the previous marks on the scale until you turn on your study back or remove it from the chart completely
-
         if (this._marksCache !== null && (firstValueIsNull || this._marksCache.firstValueIsNull === firstValueIsNull)) {
             return this._marksCache.marks;
         }
-        console.log(8888, this._marksCache?.firstValueIsNull)
         this._markBuilder.rebuildTickMarks();
         const marks = this._markBuilder.marks();
         this._marksCache = { marks, firstValueIsNull };
@@ -375,7 +373,7 @@ export class PriceScale {
         this._scaleStartPoint = this._height - x;
         
         this._priceRangeSnapshot = ensureNotNull(this.priceRange()).clone();
-
+    
     }
     scaleTo(x) {
         if (this.isPercentage() || this.isIndexedTo100()) {
@@ -399,7 +397,7 @@ export class PriceScale {
         // newPriceRange就是PriceRangeImpl的实例，经过下面scaleAroundCenter计算，得到最新的最大最小价格_minValue，_maxValue
         newPriceRange.scaleAroundCenter(scaleCoeff);
         this.setPriceRange(newPriceRange);
-        console.log('set3')
+       
     }
     endScale() {
         if (this.isPercentage() || this.isIndexedTo100()) {
@@ -434,10 +432,10 @@ export class PriceScale {
             pixelDelta *= -1;
         }
         const priceDelta = pixelDelta * priceUnitsPerPixel;
+        
         const newPriceRange = ensureNotNull(this._priceRangeSnapshot).clone();
         newPriceRange.shift(priceDelta);
         this.setPriceRange(newPriceRange, true);
-        console.log('set4')
         this._marksCache = null;
     }
     endScroll() {
@@ -680,6 +678,7 @@ export class PriceScale {
                 if (this.isLog()) {
                     priceRange = convertPriceRangeFromLog(priceRange, this._logFormula);
                 }
+                console.log(44444,extendValue, priceRange.minValue(), priceRange.maxValue(), priceRange.minValue() - extendValue, priceRange.maxValue() + extendValue)
                 priceRange = new PriceRangeImpl(priceRange.minValue() - extendValue, priceRange.maxValue() + extendValue);
                 if (this.isLog()) {
                     priceRange = convertPriceRangeToLog(priceRange, this._logFormula);

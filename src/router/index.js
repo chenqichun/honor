@@ -38,6 +38,10 @@ const routes = [
     path: '/my-candlestick',
     component: () => import("@/views/my-candlestick.vue")
   },
+  {
+    path: '/priceAxis',
+    component: () => import("@/views/priceAxis.vue")
+  },
 ]
 const router = new Router({
   mode: 'history', // 使用 HTML5 History 模式

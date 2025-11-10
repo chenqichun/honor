@@ -69,5 +69,13 @@ export class CanvasWidget extends BaseWidget{
       top: 0,
     }
   }
-
+  coverCanvas() {
+    return this._coverCanvas
+  }
+  drawCanvas() {
+    return this._drawCanvas
+  }
+  destroyed() {
+    
+  }
 }

@@ -25,18 +25,19 @@ const data = [
   { open: 10.75, high: 11.60, low: 10.49, close: 10.93, time: 1643119076 }, 
   { open: 10.93, high: 11.53, low: 10.76, close: 10.96, time: 1643205476 }
 ];
+
 const zz = new PriceScale({
   maxValue: 11.60,
   minValue: 9.1,
-  height: parseInt(this.$el.clientHeight),
+  height: 372,
   width: 0
 })
 chart.timeScale().subscribeVisibleTimeRangeChange((data) => {
   
-  setTimeout(() => {
-    zz.setPriceRange({minValue: window.priceScale?.priceRange?.().minValue?.() || 9.1, maxValue: window.priceScale?.priceRange?.().maxValue?.() || 11.6})
-console.log(zz.marks(), 99999)
-  }, 10);
+//   setTimeout(() => {
+//     zz.setPriceRange({minValue: window.priceScale?.priceRange?.().minValue?.() || 9.1, maxValue: window.priceScale?.priceRange?.().maxValue?.() || 11.6})
+// console.log(zz.marks(), 99999)
+//   }, 10);
 })
 
 candlestickSeries.setData(data);

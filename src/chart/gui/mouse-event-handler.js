@@ -104,6 +104,7 @@ export class MouseEventHandler {
         this._tapPosition = { x: Number.NEGATIVE_INFINITY, y: Number.POSITIVE_INFINITY };
     }
     _mouseMoveHandler(moveEvent) {
+        
         if (this._mousePressed || this._touchMoveStartPosition !== null) {
             return;
         }
@@ -113,6 +114,7 @@ export class MouseEventHandler {
         const compatEvent = this._makeCompatEvent(moveEvent);
         this._processMouseEvent(compatEvent, this._handler.mouseMoveEvent);
         this._acceptMouseLeave = true;
+        
     }
     _touchMoveHandler(moveEvent) {
         const touch = touchWithId(moveEvent.changedTouches, ensureNotNull(this._activeTouchId));
