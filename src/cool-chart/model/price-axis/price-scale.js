@@ -36,8 +36,9 @@ export class PriceScale {
     _cacheMark = null; 
     _startPoint = null; // 鼠标按下的点
     _calcPriceSnapshot = null;
-    _scaleRatio = 1; // y轴缩放倍率
+    _scaleRatio = 1; // y轴缩放倍率, 目前用不上，先预留
     _priceAxisChild; // PriceAxisChild 实例
+    _prevPriceChangeIsScroll = false;
     constructor(priceAxisChild,options) {
         this._priceAxisChild = priceAxisChild
         this.mergeOtions(options)
@@ -64,7 +65,7 @@ export class PriceScale {
             ? this._options.scaleMargins.bottom * this.height() + this._marginBelow
             : this._options.scaleMargins.top * this.height() + this._marginAbove; 
     }
-    bottomMarginpX() {
+    bottomMarginPx() {
         return this.isInverted() 
             ? this._options.scaleMargins.top * this.height() + this._marginAbove
             : this._options.scaleMargins.bottom * this.height() + this._marginBelow
@@ -73,7 +74,7 @@ export class PriceScale {
         return this._options.height
     }
     internalHeight() {
-        return this.height() - this.topMarginPx() - this.bottomMarginpX()
+        return this.height() - this.topMarginPx() - this.bottomMarginPx()
     }
     invertedCoordinate(coordinate) {
         return this.isInverted() ? coordinate : this.height()  - coordinate
@@ -114,7 +115,7 @@ export class PriceScale {
     _originCoordinateToPrice(coordinate) {
         const invCoordinate = this.invertedCoordinate(coordinate);
         const originRange = this._originPriceRange();
-        const priceVal = originRange.min + originRange.rangeDiff * (invCoordinate - this.bottomMarginpX()) / this.internalHeight()
+        const priceVal = originRange.min + originRange.rangeDiff * (invCoordinate - this.bottomMarginPx()) / this.internalHeight()
         return priceVal;
     }
     // 输入y轴坐标 获取 y轴价格
@@ -150,23 +151,40 @@ export class PriceScale {
             return;
         }
         const {bottomValue, topValue, tickDiffValue} = options || {}
-        const bottom =  this._originCoordinateToPrice(height)
-        const top =  this._originCoordinateToPrice(0)
+        const bottom = bottomValue ||  this._originCoordinateToPrice(height)
+        const top = topValue || this._originCoordinateToPrice(0)
      
         const minValue = this._calcMinValue = Math.min(bottom, top)
         const maxValue = this._calcMaxValue = Math.max(bottom, top)
-        const tickDiff = tickDiffValue || this.tickDiff(maxValue, minValue)
-        this._marks = [];
-        console.log(minValue, maxValue, this._scaleRatio)
+        let tickDiff = tickDiffValue || this.tickDiff(maxValue, minValue)
+        const marks = this._marks =  []
         // 从最大到最小价格划分
-        const mod = maxValue % tickDiff
+        let mod = maxValue % tickDiff
+        mod += mod < 0 ? tickDiff : 0;
+        const sign = (maxValue > minValue) ? 1 : -1;
+        let prevPixel = null, minPixel = 0, maxPixel = this.height();
+        let targetIndex = 0;
         for (let priceTick =  maxValue - mod; priceTick > minValue; priceTick -= tickDiff) {
-            this._marks.push({
+            const pixel = this.priceToCoordinate(priceTick)
+            if (prevPixel !== null && Math.abs(pixel - prevPixel) < this.tickMarkHeight()) {
+                continue;
+            }
+            if (pixel < minPixel || pixel > maxPixel) {
+                continue;
+            }
+            const item = {
                 priceTick,
                 priceTickLabel: priceTick.toFixed(this.precision()),
-                pixel: this.priceToCoordinate(priceTick)
-            })
+                pixel
+            }
+            targetIndex < marks.length ? (marks[targetIndex] = item ): marks.push(item);
+            targetIndex++;
+            prevPixel = pixel;
+            if (this.isLog()) {
+                tickDiff = this.tickDiff(priceTick * sign, minValue)
+            }
         }
+        marks.length = targetIndex
         this._cacheMark = {
             min,
             max,
@@ -186,39 +204,37 @@ export class PriceScale {
         return calcTick;
     }
     // 传入倍率重设y轴最大最小计算值
-    resetCalcPriceRangeByRatio(ratio) {
-        const max = this._options.maxValue
-        const min = this._options.minValue
+    resetCalcPriceRangeByRatio(max, min, ratio) {
         if (max - min === 0) return;
         const center = (max + min) / 2;
         let maxDelta = max - center;
         let minDelta = min - center;
         maxDelta *= ratio
         minDelta *= ratio;
-        this._scaleRatio = ratio;
-        this._options.maxValue = center + maxDelta
-        this._options.minValue = center + minDelta
+        max = center + maxDelta
+        min = center + minDelta
+        this._scaleRatio = ratio
+        return { max, min}
     }
     // 鼠标缩放开始
     startScale(y) {
         if (this.isPercentage() || this.isIndexedTo100())  return;
         if (this.isEmpty()) return;
-        if (this._startPoint) return;
-        this._startPoint = this.height() - y;
+        this._startPoint =  y;
         this._calcPriceSnapshot = {...this.getCalcPriceRange()}
     }
     scaleTo(y) {
         if (this.isPercentage() || this.isIndexedTo100())  return;
         if (!this._startPoint) return;
-        y = this.height() - y;
-
-        let scaleRatio =  (this._startPoint + this.height() * 0.2) / (y + this.height() * 0.2);
-        scaleRatio = Math.max(scaleRatio, 0.1)
         this.setFixed(false)
-        this.resetCalcPriceRangeByRatio(scaleRatio)
+        let scaleRatio =  (y + this.height()  * 0.2) / (this._startPoint + this.height()  * 0.2);
+        scaleRatio = Math.max(scaleRatio, 0.1)
+        // 根据缩放比率然后算出新的最大值，最小值
+        const { max, min } = this.resetCalcPriceRangeByRatio(this._calcPriceSnapshot.max, this._calcPriceSnapshot.min, scaleRatio)
+      
         this.createTickMarkData({
-            bottomValue: this._calcMinValue, 
-            topValue: this._calcMaxValue,
+            bottomValue: min, 
+            topValue: max,
         },true)
     }
     endScale() {
@@ -229,21 +245,29 @@ export class PriceScale {
         this._calcPriceSnapshot = null;
     }
     startScroll(y) {
+        if (this.isFixed() || this.isEmpty()) return;
+        this._startPoint =  y;
+        this._calcPriceSnapshot = {...this.getCalcPriceRange()}
+    }
+    scrollTo(y) {
         if (this.isFixed()) return;
-        if (this._startPoint) return;
-        const priceUnitsPerPixel = this.getCalcPriceRange().rangeDiff / this.height()
+        if (!this._startPoint) return;
+        let { rangeDiff, max, min } = this._calcPriceSnapshot
+        const priceUnitsPerPixel = rangeDiff / this.height()
         let pixelDelta = y - this._startPoint 
+        
         if (this.isInverted()) {
             pixelDelta *= -1
         }
         const priceDelta = pixelDelta * priceUnitsPerPixel
-        this._calcMinValue += priceDelta
-        this._calcMaxValue += priceDelta
+        max += priceDelta
+        min += priceDelta
         this.createTickMarkData({
-            bottomValue: this._calcMinValue, 
-            topValue: this._calcMaxValue,
+            bottomValue: min, 
+            topValue: max,
             tickDiffValue: this._cacheMark?.tickDiffValue
-        })
+        }, true)
+       
     }
     endSroll() {
         if (this.isFixed()) return;

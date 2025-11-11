@@ -49,6 +49,7 @@ export class PriceTickMarkBuilder {
         const maxCoord = scaleHeight - 1 - extraTopBottomMargin;
         const high = Math.max(bottom, top);
         const low = Math.min(bottom, top);
+        console.log(high, low, 444444444)
         if (high === low) {
             this._marks = [];
             return;

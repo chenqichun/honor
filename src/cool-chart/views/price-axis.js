@@ -37,14 +37,7 @@ class PriceAxisChild {
             height, 
             width
         });
-        this._handler = new PriceAxisHandler(this, {
-            height, 
-            width,
-            maxValue,
-            minValue,
-            fontFamily,
-            fontSize
-        })
+        this._handler = new PriceAxisHandler(this, this._options)
         this.render();
     }
     update(options = {}) {

@@ -1,21 +1,8 @@
-import {
-    isString,
-    isHtmlElement,
-} from '../types/check'
-
-import {
-    createEle,
-    setEleStyle,
-} from '../types/dom'
-
-import {
-    InputError,
-} from '../types/common'
-
+import {isString,isHtmlElement,} from '../types/check'
+import {createEle,setEleStyle,} from '../types/dom'
+import {InputError} from '../types/common'
 import {layoutTypes} from '../types/constant'
-import {
-    ObserveResizeWH
-} from '../model/observeResize'
+import { ObserveResizeWH } from '../model/observeResize'
 
 
 export function getTargetHtmlElement(container) {

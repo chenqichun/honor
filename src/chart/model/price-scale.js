@@ -181,7 +181,6 @@ export class PriceScale {
         }
         this._marksCache = null;
         this._priceRange = newPriceRange;
-        console.log('set111111111', newPriceRange)
     }
     setCustomPriceRange(newPriceRange) {
         console.log('set2')
@@ -370,7 +369,7 @@ export class PriceScale {
             return;
         }
         // invert x
-        this._scaleStartPoint = this._height - x;
+        this._scaleStartPoint =  x;
         
         this._priceRangeSnapshot = ensureNotNull(this.priceRange()).clone();
     
@@ -385,20 +384,20 @@ export class PriceScale {
         this.setMode({
             autoScale: false,
         });
+        
         // invert x
-        x = this._height - x;
-        if (x < 0) {
-            x = 0;
-        }
-        let scaleCoeff = (this._scaleStartPoint + (this._height - 1) * 0.2) / (x + (this._height - 1) * 0.2);
+        // x = this._height - x;
+        // if (x < 0) {
+        //     x = 0;
+        // }
+        let scaleCoeff =  (x + (this._height - 1) * 0.2) / (this._scaleStartPoint + (this._height - 1) * 0.2) ;
         const newPriceRange = ensureNotNull(this._priceRangeSnapshot).clone();
-    
+        
         scaleCoeff = Math.max(scaleCoeff, 0.1);
         // newPriceRange就是PriceRangeImpl的实例，经过下面scaleAroundCenter计算，得到最新的最大最小价格_minValue，_maxValue
         newPriceRange.scaleAroundCenter(scaleCoeff);
-        console.log(scaleCoeff,22222)
         this.setPriceRange(newPriceRange);
-       
+        
     }
     endScale() {
         if (this.isPercentage() || this.isIndexedTo100()) {
@@ -436,8 +435,10 @@ export class PriceScale {
         
         const newPriceRange = ensureNotNull(this._priceRangeSnapshot).clone();
         newPriceRange.shift(priceDelta);
+        console.log(newPriceRange)
         this.setPriceRange(newPriceRange, true);
         this._marksCache = null;
+       
     }
     endScroll() {
         if (this.isAutoScale()) {
@@ -596,7 +597,6 @@ export class PriceScale {
         const invCoordinate = this.invertedCoordinate(coordinate);
         // 价格范围，可以获取到最大值最小值
         const range = ensureNotNull(this.priceRange());
-        
         const logical = range.minValue() + range.length() *
             ((invCoordinate - this._bottomMarginPx()) / (this.internalHeight() - 1));
         return this.isLog() ? fromLog(logical, this._logFormula) : logical;
