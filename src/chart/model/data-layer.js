@@ -141,6 +141,9 @@ export class DataLayer {
         /*
             this._seriesRowsBySeries.get(series) 就是原k线数据格式话后的数据，seriesUpdateInfo 这里可以先忽略不看
         */
+       setTimeout(() => {
+        console.log(this._sortedTimePoints,889)
+       }, 1000);
         return this._getUpdateResponse(series, firstChangedPointIndex, seriesUpdateInfo(this._seriesRowsBySeries.get(series), prevSeriesRows, this._horzScaleBehavior));
     }
     removeSeries(series) {

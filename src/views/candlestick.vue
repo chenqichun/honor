@@ -28,7 +28,7 @@ candlestickSeries.setData(data);
 // setTimeout(() => {
 //   candlestickSeries.setData(data);
 // }, 0);
-chart.timeScale().fitContent();
+//chart.timeScale().fitContent();
   },
 };
 </script>

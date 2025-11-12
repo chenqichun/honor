@@ -469,6 +469,7 @@ export class ChartModel {
         this._invalidate(mask);
     }
     setRightOffset(offset) {
+        // InvalidateMask
         const mask = InvalidateMask.light();
         mask.setRightOffset(offset);
         this._invalidate(mask);

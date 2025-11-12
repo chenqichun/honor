@@ -11,6 +11,32 @@ const defaultTickMarkMaxCharacterLength = 8;
 export function markWithGreaterWeight(a, b) {
     return a.weight > b.weight ? a : b;
 }
+/**
+ * options
+ * {
+    "rightOffset": 0,
+    "barSpacing": 6,
+    "minBarSpacing": 0.5,
+    "maxBarSpacing": 0,
+    "fixLeftEdge": false, // 禁止往左边拖动
+    "fixRightEdge": false, // 禁止往右边拖动
+    "lockVisibleTimeRangeOnResize": false,
+    "rightBarStaysOnScroll": false,
+    "borderVisible": true,
+    "borderColor": "#2B2B43",
+    "visible": true,
+    "timeVisible": false,
+    "secondsVisible": true,
+    "shiftVisibleRangeOnNewBar": true,
+    "allowShiftVisibleRangeOnWhitespaceReplacement": false,
+    "ticksVisible": false,
+    "uniformDistribution": false,
+    "minimumHeight": 0,
+    "allowBoldLabels": true,
+    "ignoreWhitespaceIndices": false,
+    "rightOffsetPixels": 80
+}
+ */
 export class TimeScale {
     _options;
     _model;
@@ -36,10 +62,16 @@ export class TimeScale {
     _labels = [];
     _horzScaleBehavior;
     constructor(model, options, localizationOptions, horzScaleBehavior) {
+        // model是chartModel
+        // options 是时间轴的一些配置参数
+        // localizationOptions是语言和时间格式
+        // horzScaleBehavior 是horz-scale-behavior-time.js文件
+        console.log( model, options, localizationOptions, horzScaleBehavior)
         this._options = options;
+        
         this._localizationOptions = localizationOptions;
-        this._rightOffset = options.rightOffset;
-        this._barSpacing = options.barSpacing;
+        this._rightOffset = options.rightOffset; // 距离右侧的距离
+        this._barSpacing = options.barSpacing; // 两根柱子间的空白距离
         this._model = model;
         this._checkRightOffsetPixels(options);
         this._horzScaleBehavior = horzScaleBehavior;
@@ -466,6 +498,7 @@ export class TimeScale {
         this.setVisibleRange(new RangeImpl(first, last), true);
     }
     setLogicalRange(range) {
+        console.log('setVisibleRange22222')
         const barRange = new RangeImpl(range.from, range.to);
         this.setVisibleRange(barRange);
     }
@@ -533,6 +566,7 @@ export class TimeScale {
         }
         this._visibleRangeInvalidated = false;
         if (this.isEmpty()) {
+            console.log('setVisibleRange33333')
             this._setVisibleRange(TimeScaleVisibleRange.invalid());
             return;
         }
@@ -542,6 +576,7 @@ export class TimeScale {
         const leftBorder = rightBorder - newBarsLength + 1;
         const logicalRange = new RangeImpl(leftBorder, rightBorder);
         this._setVisibleRange(new TimeScaleVisibleRange(logicalRange));
+        console.log('setVisibleRange444')
     }
     _correctBarSpacing() {
         const barSpacing = clamp(this._barSpacing, this._minBarSpacing(), this._maxBarSpacing());

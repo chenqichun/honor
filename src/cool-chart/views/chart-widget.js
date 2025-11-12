@@ -19,6 +19,7 @@ import {PanelWidget} from './panel-widget'
 import { ObserveResizeWH } from '../model/observeResize'
 import { TimeAxisWidget, timeAxisHeight } from './time-axis'
 import { PriceAxisSize } from '../model/price-axis/price-axis-size'
+import { DataLayer } from '../model/data-layer/data-layer'
 
 export class ChartWidget {
     _allChartContainer; // 所有图表区域
@@ -34,9 +35,12 @@ export class ChartWidget {
     _size =  { left: 0, top: 0, width: 0, height: 0}; // 记录尺寸
     _observerResize;
     _PriceAxisSize;
-    constructor(allChartContainer, options = {...widgetDefaultOption}) {
+    _$root;
+    __dataLayer;
+    constructor($root, allChartContainer, options = {}) {
+        this._$root = $root;
         this._allChartContainer = allChartContainer;
-        this._options = options;
+        this._options = {...widgetDefaultOption, ...options};
         this._name = options.name
         this.createWidget();
         // 创建子面板
@@ -49,8 +53,19 @@ export class ChartWidget {
         this._timeAxisWidget = new TimeAxisWidget(this)
         // 创建价格轴宽度变化处理
         this._PriceAxisSize = new PriceAxisSize(this)
+        // 创建数据管理
+        this._dataLayer = new DataLayer()
         // 监听自身尺寸变化
         this.setOneselfResize();
+    }
+    $root() {
+        return this._$root;
+    }
+    name() {
+        return this._name
+    }
+    dataLayer() {
+        return this._dataLayer
     }
     // 创建节点
     createWidget() {
@@ -132,7 +147,7 @@ export class ChartWidget {
         this._observerResize = null;
         this._panelWidgetList.forEach(e => e.destroyed?.())
         this._widget_container.remove()
-        
+        this._dataLayer.destroyed()
         this._panelWidgetList = null;
     }
     // 获取
@@ -153,5 +168,14 @@ export class ChartWidget {
         }
         render();
         this._observerResize = new ObserveResizeWH(this._widget_container,{callback: () => render()})
+    }
+    setData(dataList) {
+        this.dataLayer().setData(dataList)
+    }
+    addData(dataList, isHistory) {
+        this.dataLayer().addData(dataList, isHistory)
+    }
+    updateNewPoint(data) {
+        this.dataLayer().updateNewPoint(data)
     }
 }

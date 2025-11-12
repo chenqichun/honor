@@ -9,8 +9,8 @@ export  class ChartWidgetHandler {
     }
     // 添加品种图表面版
     addChartWidget(widget, isSetAcctiveName) {
-        this._chartWidgetMap.set(widget.name, widget)
-        if (isSetAcctiveName) this._activeChartName = widget.name
+        this._chartWidgetMap.set(widget.name(), widget)
+        if (isSetAcctiveName) this._activeChartName = widget.name()
     }
     // 激活目标面版
     setActiveChartWidget(chartName) {

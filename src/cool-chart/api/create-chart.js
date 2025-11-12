@@ -22,7 +22,7 @@ export class CoolChart {
         const { stockId } = options
         const name = `${stockId}_${Date.now()}_${Math.random()}`.replace(/\./,'')
         const chartOption = {name, ...this.getRoot()}
-        const chartWidgetInstance = new ChartWidget(this._chartContainer.getContainer(), chartOption)
+        const chartWidgetInstance = new ChartWidget(this, this._chartContainer.getContainer(), chartOption)
         this.$chartWidgetHandler.addChartWidget(chartWidgetInstance)
     }
     // 传给各各类中，让它可以访问跟实例的所有内容
