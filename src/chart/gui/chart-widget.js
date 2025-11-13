@@ -431,6 +431,7 @@ export class ChartWidget {
             return;
         }
         const scrollSpeedAdjustment = this._determineWheelSpeedAdjustment(event);
+      
         const deltaX = scrollSpeedAdjustment * event.deltaX / 100;
         const deltaY = -(scrollSpeedAdjustment * event.deltaY / 100);
         if (event.cancelable) {
@@ -442,6 +443,7 @@ export class ChartWidget {
             this.model().zoomTime(scrollPosition, zoomScale);
         }
         if (deltaX !== 0 && this._options['handleScroll'].mouseWheel) {
+
             this.model().scrollChart(deltaX * -80); // 80 is a made up coefficient, and minus is for the "natural" scroll
         }
     }

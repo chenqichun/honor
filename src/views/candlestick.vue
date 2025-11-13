@@ -21,7 +21,7 @@ const data = [
   { open: 10.47, high: 11.39, low: 10.40, close: 10.81, time: 1642946276 }, 
   { open: 10.81, high: 11.60, low: 10.30, close: 10.75, time: 1643032676 }, 
   { open: 10.75, high: 11.60, low: 10.49, close: 10.93, time: 1643119076 }, 
-  { open: 10.93, high: 11.53, low: 10.76, close: 10.96, time: 1643205476 }
+ // { open: 10.93, high: 11.53, low: 10.76, close: 10.96, time: 1643205476 }
 ];
 
 candlestickSeries.setData(data);

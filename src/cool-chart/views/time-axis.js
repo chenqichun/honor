@@ -32,7 +32,7 @@ export class TimeAxisWidget extends BaseWidget {
         this._chartWidget = chartWidget;
         this._options = {...this._options, ...options} 
         this.createElement();
-        this._timeScale = new TimeScale()
+        this._timeScale = new TimeScale(chartWidget)
     }
     createElement() {
         const {width,height} = this._options
@@ -74,8 +74,12 @@ export class TimeAxisWidget extends BaseWidget {
             const mainW = width - this._options.leftWidth - this._options.rightWidth
             setEleStyle(this._mainAreaEl, {width: mainW + 'px', height: height + 'px'});
             this._mainAreaWidget.setSize(mainW, height)
+            this.timeScale().setWidth(mainW)
         }
         
+    }
+    timeScale() {
+        return this._timeScale
     }
     destroyed() {
         this._mainArea.clear();

@@ -15,12 +15,15 @@
    }
  */
 import { InputError } from '../../types/common'
+import { DateLayerBase } from './data-layer-base' 
 
 export class DataLayer extends DateLayerBase {
     _dataList = []; // 数据的储存，最开始的索引是老数据，最后的索引是新数据
     _futureDataList = []; // 这里存放未来时间的推算
     _dataTimeMap = new Map(); // 目前开始时间
-    constructor(options) {}
+    constructor(options) {
+        super(options)
+    }
     // 初始化数据
     setData(dataList) {
         this._dataList = this.forMaterData(dataList)
@@ -84,10 +87,12 @@ export class DataLayer extends DateLayerBase {
     updateTimeMap() {
         this._dataList.forEach(e => this._dataTimeMap.set(e.s, e))
     }
+
     destroyed() {
         this._dataTimeMap.clear();
         this._dataTimeMap = null;
         this._dataList = null
         this._futureDataList = null
     }
+
 }

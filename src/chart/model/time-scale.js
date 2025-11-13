@@ -71,7 +71,7 @@ export class TimeScale {
         
         this._localizationOptions = localizationOptions;
         this._rightOffset = options.rightOffset; // 距离右侧的距离
-        this._barSpacing = options.barSpacing; // 两根柱子间的空白距离
+        this._barSpacing = options.barSpacing; // 每跟柱子的宽度，包含留白
         this._model = model;
         this._checkRightOffsetPixels(options);
         this._horzScaleBehavior = horzScaleBehavior;
@@ -201,6 +201,7 @@ export class TimeScale {
             // recalculate bar spacing
             const newBarSpacing = this._barSpacing * newWidth / oldWidth;
             this._barSpacing = newBarSpacing;
+            console.log('this._barSpacing11111')
         }
         // if time scale is scrolled to the end of data and we have fixed right edge
         // keep left edge instead of right
@@ -261,6 +262,7 @@ export class TimeScale {
     setBarSpacing(newBarSpacing) {
         const oldBarSpacing = this._barSpacing;
         this._setBarSpacing(newBarSpacing);
+        console.log('this._barSpacing---------')
         if (this._options.rightOffsetPixels !== undefined && oldBarSpacing !== 0) {
             // when in pixel mode, zooming should keep the pixel offset, so we need to
             // recalculate the bar offset.
@@ -363,13 +365,16 @@ export class TimeScale {
      * Negative value means zoom out, positive - zoom in.
      */
     zoom(zoomPoint, scale) {
+       
         const floatIndexAtZoomPoint = this._coordinateToFloatIndex(zoomPoint);
+      
         const barSpacing = this.barSpacing();
         const newBarSpacing = barSpacing + scale * (barSpacing / 10);
         // zoom in/out bar spacing
         this.setBarSpacing(newBarSpacing);
         if (!this._options.rightBarStaysOnScroll) {
             // and then correct right offset to move index under zoomPoint back to its coordinate
+            console.log(floatIndexAtZoomPoint, this._coordinateToFloatIndex(zoomPoint), 9999999999)
             this.setRightOffset(this.rightOffset() + (floatIndexAtZoomPoint - this._coordinateToFloatIndex(zoomPoint)));
         }
     }
@@ -395,6 +400,7 @@ export class TimeScale {
         if (startLengthFromRight === 0 || currentLengthFromRight === 0) {
             return;
         }
+        
         this.setBarSpacing(this._commonTransitionStartState.barSpacing * startLengthFromRight / currentLengthFromRight);
     }
     endScale() {
@@ -456,6 +462,7 @@ export class TimeScale {
         this._visibleRangeInvalidated = true;
         this._points = newPoints;
         this._tickMarks.setTimeScalePoints(newPoints, firstChangedPointIndex);
+        console.log(this._tickMarks,11111)
         this._correctOffset();
     }
     visibleBarsChanged() {
@@ -478,6 +485,7 @@ export class TimeScale {
         const length = range.count();
         const pixelOffset = (applyDefaultOffset && this._options.rightOffsetPixels) || 0;
         this._setBarSpacing((this._width - pixelOffset) / length);
+        console.log('this._barSpacing2222xxxx')
         this._rightOffset = range.right() - this.baseIndex();
         if (applyDefaultOffset) {
             this._rightOffset = pixelOffset
@@ -545,6 +553,7 @@ export class TimeScale {
     _coordinateToFloatIndex(x) {
         const deltaFromRight = this._rightOffsetForCoordinate(x);
         const baseIndex = this.baseIndex();
+        console.log(11111, baseIndex, this._rightOffset)
         const index = baseIndex + this._rightOffset - deltaFromRight;
         // JavaScript uses very strange rounding
         // we need rounding to avoid problems with calculation errors
@@ -572,16 +581,18 @@ export class TimeScale {
         }
         const baseIndex = this.baseIndex();
         const newBarsLength = this._width / this._barSpacing;
+        console.log(this._barSpacing, 777777777777)
         const rightBorder = this._rightOffset + baseIndex;
         const leftBorder = rightBorder - newBarsLength + 1;
         const logicalRange = new RangeImpl(leftBorder, rightBorder);
         this._setVisibleRange(new TimeScaleVisibleRange(logicalRange));
-        console.log('setVisibleRange444')
+        console.log('setVisibleRange444', leftBorder, rightBorder, baseIndex)
     }
     _correctBarSpacing() {
         const barSpacing = clamp(this._barSpacing, this._minBarSpacing(), this._maxBarSpacing());
         if (this._barSpacing !== barSpacing) {
             this._barSpacing = barSpacing;
+            console.log('this._barSpacing3333')
             this._visibleRangeInvalidated = true;
         }
     }

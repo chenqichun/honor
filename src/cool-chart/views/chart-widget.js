@@ -20,6 +20,7 @@ import { ObserveResizeWH } from '../model/observeResize'
 import { TimeAxisWidget, timeAxisHeight } from './time-axis'
 import { PriceAxisSize } from '../model/price-axis/price-axis-size'
 import { DataLayer } from '../model/data-layer/data-layer'
+import { ChartWidgetMouseHandler} from '../handler/chartwidget-mouse-handler'
 
 export class ChartWidget {
     _allChartContainer; // 所有图表区域
@@ -36,7 +37,8 @@ export class ChartWidget {
     _observerResize;
     _PriceAxisSize;
     _$root;
-    __dataLayer;
+    _dataLayer;
+    _chartWidgetMouseHandler;
     constructor($root, allChartContainer, options = {}) {
         this._$root = $root;
         this._allChartContainer = allChartContainer;
@@ -79,7 +81,7 @@ export class ChartWidget {
         setEleStyle(this._widget_container,{position: 'absolute'})
 
         this.updateWidgetSize({ left: left || 0,top: top || 0, width: width || allWidth, height: height || allHeight });
-
+        this._chartWidgetMouseHandler = new ChartWidgetMouseHandler(this)
     }
     // 初始化panelWidget,创建子面板
     initPanelWidget() {
@@ -148,6 +150,7 @@ export class ChartWidget {
         this._panelWidgetList.forEach(e => e.destroyed?.())
         this._widget_container.remove()
         this._dataLayer.destroyed()
+        this._chartWidgetMouseHandler.destroyed()
         this._panelWidgetList = null;
     }
     // 获取
@@ -177,5 +180,12 @@ export class ChartWidget {
     }
     updateNewPoint(data) {
         this.dataLayer().updateNewPoint(data)
+    }
+    // 获取当前节点
+    getNode() {
+        return this._widget_container
+    }
+    timeScale() {
+        return this._timeAxisWidget.timeScale()
     }
 }

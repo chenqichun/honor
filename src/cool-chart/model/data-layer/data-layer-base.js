@@ -19,5 +19,11 @@ export class DateLayerBase {
     length() {
         return this._dataList.length
     }
+    hasData() {
+        return this._dataList.length > 0
+    }
+    baseIndex() {
+        return this.length() - 1;
+    }
 
 }
