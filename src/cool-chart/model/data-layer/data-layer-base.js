@@ -1,7 +1,7 @@
 export class DateLayerBase {
     // 格式化数据
     forMaterData(dataList) {
-        const res = dataList.sort((a,b) => a.s - b.s).map(e => {
+        const res = dataList.sort((a,b) => a.ts - b.te).map(e => {
             const item = e;
             return item
         })

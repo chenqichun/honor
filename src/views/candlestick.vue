@@ -25,6 +25,9 @@ const data = [
 ];
 
 candlestickSeries.setData(data);
+setTimeout(() => {
+  candlestickSeries.update({ open: 10.93, high: 11.53, low: 10.76, close: 10.96, time: 1643205476 })
+}, 2000);
 // setTimeout(() => {
 //   candlestickSeries.setData(data);
 // }, 0);

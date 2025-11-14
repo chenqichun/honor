@@ -18,10 +18,10 @@ export function markWithGreaterWeight(a, b) {
     "barSpacing": 6,
     "minBarSpacing": 0.5,
     "maxBarSpacing": 0,
-    "fixLeftEdge": false, // 禁止往左边拖动
-    "fixRightEdge": false, // 禁止往右边拖动
+    "fixLeftEdge": false, // 就是往右拖动的时候，第一根k线就靠在最多靠在坐标x=0的地方不能再像右了
+    "fixRightEdge": false, // 就是往左拖动的时候，最大的rightOffset为0
     "lockVisibleTimeRangeOnResize": false,
-    "rightBarStaysOnScroll": false,
+    "rightBarStaysOnScroll": false, // 如果为true,就是缩放的时候只往左边缩放， 而且有一个特殊现象，就是面版的最右侧位置，如果在某一根k线的位置
     "borderVisible": true,
     "borderColor": "#2B2B43",
     "visible": true,
@@ -34,7 +34,7 @@ export function markWithGreaterWeight(a, b) {
     "minimumHeight": 0,
     "allowBoldLabels": true,
     "ignoreWhitespaceIndices": false,
-    "rightOffsetPixels": 80
+    "rightOffsetPixels": 80 // 就是距离右侧有多少像素，会跟rightOffset冲突，同时会影响到鼠标在时间轴上按住拖动的效果（会保持距离右侧不变的偏移量像素）
 }
  */
 export class TimeScale {
@@ -68,16 +68,17 @@ export class TimeScale {
         // horzScaleBehavior 是horz-scale-behavior-time.js文件
         console.log( model, options, localizationOptions, horzScaleBehavior)
         this._options = options;
-        
         this._localizationOptions = localizationOptions;
         this._rightOffset = options.rightOffset; // 距离右侧的距离
         this._barSpacing = options.barSpacing; // 每跟柱子的宽度，包含留白
         this._model = model;
+        this._options.lockVisibleTimeRangeOnResize = true
         this._checkRightOffsetPixels(options);
         this._horzScaleBehavior = horzScaleBehavior;
         this._updateDateTimeFormatter();
         this._tickMarks.setUniformDistribution(options.uniformDistribution);
         this.recalculateIndicesWithData();
+        window.visibleTimeRange = this.visibleTimeRange.bind(this)
     }
     options() {
         return this._options;
@@ -123,6 +124,7 @@ export class TimeScale {
         return this._points[index] ?? null;
     }
     timeToIndex(time, findNearest) {
+        console.log(time, findNearest, 'findNearest')
         if (this._points.length < 1) {
             // no time points available
             return null;
@@ -262,12 +264,12 @@ export class TimeScale {
     setBarSpacing(newBarSpacing) {
         const oldBarSpacing = this._barSpacing;
         this._setBarSpacing(newBarSpacing);
-        console.log('this._barSpacing---------')
         if (this._options.rightOffsetPixels !== undefined && oldBarSpacing !== 0) {
             // when in pixel mode, zooming should keep the pixel offset, so we need to
             // recalculate the bar offset.
             const newRightOffset = this._rightOffset * oldBarSpacing / this._barSpacing;
             this._rightOffset = newRightOffset;
+            
         }
         // do not allow scroll out of visible bars
         this._correctOffset();
@@ -374,7 +376,6 @@ export class TimeScale {
         this.setBarSpacing(newBarSpacing);
         if (!this._options.rightBarStaysOnScroll) {
             // and then correct right offset to move index under zoomPoint back to its coordinate
-            console.log(floatIndexAtZoomPoint, this._coordinateToFloatIndex(zoomPoint), 9999999999)
             this.setRightOffset(this.rightOffset() + (floatIndexAtZoomPoint - this._coordinateToFloatIndex(zoomPoint)));
         }
     }
@@ -462,7 +463,7 @@ export class TimeScale {
         this._visibleRangeInvalidated = true;
         this._points = newPoints;
         this._tickMarks.setTimeScalePoints(newPoints, firstChangedPointIndex);
-        console.log(this._tickMarks,11111)
+        console.log(this._tickMarks,8888)
         this._correctOffset();
     }
     visibleBarsChanged() {
@@ -581,22 +582,20 @@ export class TimeScale {
         }
         const baseIndex = this.baseIndex();
         const newBarsLength = this._width / this._barSpacing;
-        console.log(this._barSpacing, 777777777777)
         const rightBorder = this._rightOffset + baseIndex;
         const leftBorder = rightBorder - newBarsLength + 1;
         const logicalRange = new RangeImpl(leftBorder, rightBorder);
         this._setVisibleRange(new TimeScaleVisibleRange(logicalRange));
-        console.log('setVisibleRange444', leftBorder, rightBorder, baseIndex)
     }
     _correctBarSpacing() {
         const barSpacing = clamp(this._barSpacing, this._minBarSpacing(), this._maxBarSpacing());
         if (this._barSpacing !== barSpacing) {
             this._barSpacing = barSpacing;
-            console.log('this._barSpacing3333')
             this._visibleRangeInvalidated = true;
         }
     }
     _maxBarSpacing() {
+        console.log('_maxBarSpacing', this._options.maxBarSpacing)
         if (this._options.maxBarSpacing > 0) {
             // option takes precedance
             return this._options.maxBarSpacing;
